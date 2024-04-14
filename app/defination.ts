@@ -30,7 +30,7 @@ export interface SwapInputProps {
   amount: number | "";
   handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
 }
-export interface CurrencySelectorProps {
+export interface TokenSelectorProps {
   options: string[];
   value: string;
   onChange: (value: string) => void;
