@@ -28,10 +28,16 @@ export interface SwapInputProps {
   selectedToken: string;
   onSelectToken: (token: string) => void;
   amount: number | "";
+  tokenBalance: string;
+  readOnly: boolean;
   handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
 }
 export interface TokenSelectorProps {
   options: string[];
   value: string;
   onChange: (value: string) => void;
+}
+
+export interface TokenAddressMapping {
+  [key: string]: string; // This indicates that it can be indexed with any string
 }
