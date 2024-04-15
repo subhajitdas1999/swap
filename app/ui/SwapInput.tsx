@@ -8,6 +8,8 @@ const SwapInput: React.FC<SwapInputProps> = ({
   selectedToken,
   onSelectToken,
   amount,
+  tokenBalance,
+  readOnly,
   handleAmountChange,
 }) => {
   return (
@@ -24,13 +26,17 @@ const SwapInput: React.FC<SwapInputProps> = ({
         }}
         className="w-full bg-transparent  text-xl outline-none"
         value={amount}
-        onChange={handleAmountChange}
+        readOnly={readOnly}
+        onChange={!readOnly ? handleAmountChange : undefined}
       />
       <TokenSelector
         options={tokens}
         value={selectedToken}
         onChange={onSelectToken}
       />
+      <div className="absolute right-6 bottom-1">
+        <span className="text-sm ">Balance: {tokenBalance}</span>
+      </div>
     </div>
   );
 };
