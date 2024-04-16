@@ -41,3 +41,9 @@ export interface TokenSelectorProps {
 export interface TokenAddressMapping {
   [key: string]: string; // This indicates that it can be indexed with any string
 }
+
+export interface ConnectWalletResponse {
+  success: boolean;
+  message: string;
+  address: string | null;
+}
