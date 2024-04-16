@@ -234,7 +234,7 @@ const TokenAbi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_tokenSupply",
+        name: "_amount",
         type: "uint256",
       },
     ],
