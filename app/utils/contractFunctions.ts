@@ -8,11 +8,12 @@ export const approveToken = async (
   signer: ethers.Signer,
   tokenAddress: string,
   amount: ethers.BigNumber
-) => {
+): Promise<string> => {
   // Create an instance of the token contract
   const tokenContract = new ethers.Contract(tokenAddress, TokenAbi, signer);
   const txResponse = await tokenContract.approve(swapContractAddress, amount);
   await txResponse.wait();
+  return txResponse.hash;
 };
 
 export const swapTokens = async (
@@ -20,7 +21,7 @@ export const swapTokens = async (
   fromTokenAddress: string,
   toTokenAddress: string,
   amount: ethers.BigNumber
-) => {
+): Promise<string> => {
   // Create an instance of the swap contract
   const swapContract = new ethers.Contract(
     swapContractAddress,
@@ -35,6 +36,7 @@ export const swapTokens = async (
   );
 
   await swapTxResponse.wait();
+  return swapTxResponse.hash;
 };
 
 export const getFormattedTokenAmount = async (
