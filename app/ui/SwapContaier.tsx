@@ -25,7 +25,6 @@ const tokenAddressMapping: TokenAddressMapping = {
   MyTokenC: "0x41F4Ebb8C57895e2BeEB539f0d7bb75945132C0c",
 };
 
-// SwapContainer.jsx
 const SwapContainer = () => {
   const { isConnected, address, handleConnect } = useWallet();
   const [payToken, setPayToken] = useState(tokens[0]);
