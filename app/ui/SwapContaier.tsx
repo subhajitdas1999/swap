@@ -80,6 +80,74 @@ const SwapContainer = () => {
     }
   };
 
+  // approve
+  const handleApprove = async (
+    signer: ethers.Signer,
+    fromTokenAddress: string,
+    formattedAmount: ethers.BigNumber
+  ) => {
+    try {
+      setApproveStatus("inProgress");
+      const approveHash = await approveToken(
+        signer,
+        fromTokenAddress,
+        formattedAmount
+      );
+      setApproveStatus("completed");
+      showToast(`Token approval successful \n ${approveHash}`, "success");
+    } catch (error: any) {
+      handleTransactionError(error);
+    }
+  };
+
+  // token swap
+  const handleSwap = async (
+    signer: ethers.Signer,
+    fromTokenAddress: string,
+    toTokenAddress: string,
+    formattedAmount: ethers.BigNumber
+  ) => {
+    try {
+      setSwapStatus("inProgress");
+      const swapHash = await swapTokens(
+        signer,
+        fromTokenAddress,
+        toTokenAddress,
+        formattedAmount
+      );
+      setSwapStatus("completed");
+      showToast(`Token swap successful \n ${swapHash}`, "success");
+    } catch (error: any) {
+      handleTransactionError(error);
+    }
+  };
+
+  // toast notifications
+  const showToast = (message: string, type: "success" | "error") => {
+    if (type === "success") {
+      toast.success(message, { position: "top-right" });
+    } else {
+      toast.error(message, { position: "top-right" });
+    }
+  };
+
+  // transaction errors
+  const handleTransactionError = (error: any) => {
+    if (error.code === "ACTION_REJECTED") {
+      showToast(`${error.reason}`, "error");
+    } else {
+      showToast(`Transaction unsuccessful`, "error");
+    }
+  };
+
+  const resetTransactionStates = () => {
+    setPayAmount("");
+    setReceiveAmount("");
+    setIsModalOpen(false);
+    setApproveStatus("pending");
+    setSwapStatus("pending");
+  };
+
   const handleSwapClick = async () => {
     if (payAmount == "" || payAmount == 0) {
       return;
@@ -92,56 +160,27 @@ const SwapContainer = () => {
     const signer = provider.getSigner();
     try {
       setIsModalOpen(true);
-      const fromTokenAddress = tokenAddressMapping[payToken];
-      const toTokenAddress = tokenAddressMapping[receiveToken];
 
       //formatting
       const formattedAmount = await getFormattedTokenAmount(
-        fromTokenAddress,
+        tokenAddressMapping[payToken],
         payAmount as number
       );
-      setApproveStatus("inProgress");
-
-      // approve the token
-      const approveHash = await approveToken(
+      await handleApprove(
         signer,
-        fromTokenAddress,
+        tokenAddressMapping[payToken],
         formattedAmount
       );
-      toast.success(`Token approval successful \n ${approveHash}`, {
-        position: "top-right",
-      });
-      setApproveStatus("completed");
-
-      setSwapStatus("inProgress");
-
-      //perform swap
-      const swapHash = await swapTokens(
+      await handleSwap(
         signer,
-        fromTokenAddress,
-        toTokenAddress,
+        tokenAddressMapping[payToken],
+        tokenAddressMapping[receiveToken],
         formattedAmount
       );
-      toast.success(`Token swap successful \n ${swapHash}`, {
-        position: "top-right",
-      });
-      setSwapStatus("completed");
     } catch (error: any) {
-      if (error.code === "ACTION_REJECTED") {
-        toast.error(`${error.reason} `, {
-          position: "top-right",
-        });
-      } else {
-        toast.error(`transaction unsuccessful`, {
-          position: "top-right",
-        });
-      }
+      console.log(error);
     }
-    setPayAmount("");
-    setReceiveAmount("");
-    setIsModalOpen(false);
-    setApproveStatus("pending");
-    setSwapStatus("pending");
+    resetTransactionStates();
   };
 
   return (
