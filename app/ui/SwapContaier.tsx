@@ -20,9 +20,9 @@ import TransactionModal from "./TransactionModal";
 
 const tokens = ["MyTokenA", "MyTokenB", "MyTokenC"];
 const tokenAddressMapping: TokenAddressMapping = {
-  MyTokenA: "0xd9a88D569bC48bB2f2a4a236B36e68cefd7EeE85",
-  MyTokenB: "0xF056449423335eEC60D5a6c536a20dd6f949DAce",
-  MyTokenC: "0xcf1105FaF5C7758a19Ef60F89ac0BD8696C234e6",
+  MyTokenA: "0xbf71abAF248b635048289528c7F901BA6080D982",
+  MyTokenB: "0xaCF19e2B7BD57cFfaDdC3F6d61B8021862e156f6",
+  MyTokenC: "0x41F4Ebb8C57895e2BeEB539f0d7bb75945132C0c",
 };
 
 // SwapContainer.jsx
@@ -137,7 +137,8 @@ const SwapContainer = () => {
         });
       }
     }
-
+    setPayAmount("");
+    setReceiveAmount("");
     setIsModalOpen(false);
     setApproveStatus("pending");
     setSwapStatus("pending");

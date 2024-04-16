@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import TokenAbi from "../contracts/ERC20Token";
 import SwapAbi from "../contracts/Swap";
 
-const swapContractAddress = "0x96E82c9F7D3A77572Ac3D134bBDd618865251397";
+const swapContractAddress = "0xB140fdaE46f00D2e89da5c28b4ef8ec287BC9a71";
 
 export const approveToken = async (
   signer: ethers.Signer,
