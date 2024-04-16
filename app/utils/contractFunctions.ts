@@ -72,7 +72,7 @@ export const fetchReceiveAmount = async (
 
   const formattedAmountOut = ethers.utils.formatUnits(amountOut, 9);
 
-  return Number(formattedAmountOut).toPrecision(4);
+  return Number(formattedAmountOut).toPrecision(6);
 };
 
 // Fetch balance function
