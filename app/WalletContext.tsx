@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { WalletContextState } from "./defination";
 import { checkWalletConnection, connectWallet } from "./utils/connectWallet";
+import { toast } from "react-toastify";
 
 // Create the context with a default value
 const WalletContext = createContext<WalletContextState>({
@@ -32,20 +33,28 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       if (currentAddress) {
         setIsConnected(true);
         setAddress(currentAddress);
+      } else {
+        setIsConnected(false);
+        setAddress("");
       }
     };
 
     initializeConnection();
   }, []);
-
   const handleConnect = async () => {
     const result = await connectWallet();
-    if (result) {
+    if (result.success) {
       setIsConnected(true);
-      setAddress(result);
+      setAddress(result.address as string);
+      toast.success(`${result.message} `, {
+        position: "top-right",
+      });
     } else {
       setIsConnected(false);
       setAddress("");
+      toast.error(`${result.message} `, {
+        position: "top-right",
+      });
     }
   };
 
