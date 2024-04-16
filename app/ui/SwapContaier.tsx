@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { useWallet } from "../WalletContext";
 import SwapInput from "./SwapInput";
 import Button from "./Button";
-import { BigNumber, ethers } from "ethers";
-import TokenAbi from "../contracts/ERC20Token";
-import { TokenAddressMapping } from "../defination";
-import SwapAbi from "../contracts/Swap";
+import { ethers } from "ethers";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
+import { TokenAddressMapping, TransactionStatus } from "../defination";
+
 import { checkWalletConnection } from "../utils/connectWallet";
 import {
   approveToken,
@@ -15,6 +16,7 @@ import {
   getFormattedTokenAmount,
   swapTokens,
 } from "../utils/contractFunctions";
+import TransactionModal from "./TransactionModal";
 
 const tokens = ["MyTokenA", "MyTokenB", "MyTokenC"];
 const tokenAddressMapping: TokenAddressMapping = {
@@ -33,6 +35,10 @@ const SwapContainer = () => {
   const [payTokenBalance, setPayTokenBalance] = useState<string>("0");
   const [receiveTokenBalance, setReceiveTokenBalance] = useState<string>("0");
   const [equivalentAmount, setEquivalentAmount] = useState<string>("0");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [approveStatus, setApproveStatus] =
+    useState<TransactionStatus>("pending");
+  const [swapStatus, setSwapStatus] = useState<TransactionStatus>("pending");
 
   useEffect(() => {
     (async () => {
@@ -53,21 +59,24 @@ const SwapContainer = () => {
 
   useEffect(() => {
     (async () => {
-      const OnePayTokenToReceiveTokenAmount = await fetchReceiveAmount(
-        tokenAddressMapping[payToken],
-        tokenAddressMapping[receiveToken],
-        1
-      );
-      setEquivalentAmount(OnePayTokenToReceiveTokenAmount);
+      if (isConnected) {
+        const OnePayTokenToReceiveTokenAmount = await fetchReceiveAmount(
+          tokenAddressMapping[payToken],
+          tokenAddressMapping[receiveToken],
+          1
+        );
+        setEquivalentAmount(OnePayTokenToReceiveTokenAmount);
+      }
     })();
-  }, [payToken, receiveToken]);
+  }, [isConnected, payToken, receiveToken]);
 
   const handleAmountChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsed = e.target.value ? parseFloat(e.target.value) : "";
     if (e.target.id === "pay") {
       setPayAmount(parsed);
-    } else {
-      setReceiveAmount(parsed);
+      setReceiveAmount(
+        parsed === "" ? "" : parsed * parseFloat(equivalentAmount)
+      );
     }
   };
 
@@ -82,6 +91,7 @@ const SwapContainer = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     try {
+      setIsModalOpen(true);
       const fromTokenAddress = tokenAddressMapping[payToken];
       const toTokenAddress = tokenAddressMapping[receiveToken];
 
@@ -90,23 +100,47 @@ const SwapContainer = () => {
         fromTokenAddress,
         payAmount as number
       );
+      setApproveStatus("inProgress");
 
       // approve the token
-      await approveToken(signer, fromTokenAddress, formattedAmount);
-      console.log("Token approval successful.");
+      const approveHash = await approveToken(
+        signer,
+        fromTokenAddress,
+        formattedAmount
+      );
+      toast.success(`Token approval successful \n ${approveHash}`, {
+        position: "top-right",
+      });
+      setApproveStatus("completed");
 
-      await swapTokens(
+      setSwapStatus("inProgress");
+
+      //perform swap
+      const swapHash = await swapTokens(
         signer,
         fromTokenAddress,
         toTokenAddress,
         formattedAmount
       );
-      console.log("Token swap successful.");
-
-      // Further actions after approval can proceed here
-    } catch (error) {
-      console.error("Error during token approval:", error);
+      toast.success(`Token swap successful \n ${swapHash}`, {
+        position: "top-right",
+      });
+      setSwapStatus("completed");
+    } catch (error: any) {
+      if (error.code === "ACTION_REJECTED") {
+        toast.error(`${error.reason} `, {
+          position: "top-right",
+        });
+      } else {
+        toast.error(`transaction unsuccessful`, {
+          position: "top-right",
+        });
+      }
     }
+
+    setIsModalOpen(false);
+    setApproveStatus("pending");
+    setSwapStatus("pending");
   };
 
   return (
@@ -148,6 +182,13 @@ const SwapContainer = () => {
       ) : (
         <Button label="Connect Wallet" onClick={handleConnect} />
       )}
+      {isModalOpen && (
+        <TransactionModal
+          approveStatus={approveStatus}
+          swapStatus={swapStatus}
+        />
+      )}
+      <ToastContainer />
     </div>
   );
 };
