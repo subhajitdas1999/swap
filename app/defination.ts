@@ -1,12 +1,6 @@
 export enum ConnectionErrorCode {
   USER_REJECTED_REQUEST = 4001,
-  //   UNAUTHORIZED = 4100,
-  //   UNSUPPORTED_METHOD = 4200,
-  DISCONNECTED = 4900,
-  CHAIN_DISCONNECTED = 4901,
-
   CHAIN_NOT_ADDED = 4902,
-  MM_ALREADY_PENDING = -32002,
 }
 
 export interface ButtonProps {
@@ -39,11 +33,18 @@ export interface TokenSelectorProps {
 }
 
 export interface TokenAddressMapping {
-  [key: string]: string; // This indicates that it can be indexed with any string
+  [key: string]: string;
 }
 
 export interface ConnectWalletResponse {
   success: boolean;
   message: string;
   address: string | null;
+}
+
+export type TransactionStatus = "inProgress" | "completed" | "pending";
+
+export interface TransactionModalProps {
+  approveStatus: TransactionStatus;
+  swapStatus: TransactionStatus;
 }
