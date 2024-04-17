@@ -1,31 +1,24 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useWallet } from "../WalletContext";
-import SwapInput from "./SwapInput";
-import Button from "./Button";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
-import { TokenAddressMapping, TransactionStatus } from "../defination";
-
-import { checkWalletConnection } from "../utils/connectWallet";
+import { toast } from "react-toastify";
 import {
   approveToken,
   fetchReceiveAmount,
   fetchTokenBalance,
   getFormattedTokenAmount,
   swapTokens,
-} from "../utils/contractFunctions";
-import TransactionModal from "./TransactionModal";
+} from "../services/contractFunctions";
+import {
+  TokenAddressMapping,
+  TransactionStatus,
+} from "../interfaces/defination";
+import { checkWalletConnection } from "../utils/connectWallet";
+import { useWallet } from "../provider/WalletProvider";
 
-const tokens = ["MyTokenA", "MyTokenB", "MyTokenC"];
-const tokenAddressMapping: TokenAddressMapping = {
-  MyTokenA: "0xbf71abAF248b635048289528c7F901BA6080D982",
-  MyTokenB: "0xaCF19e2B7BD57cFfaDdC3F6d61B8021862e156f6",
-  MyTokenC: "0x41F4Ebb8C57895e2BeEB539f0d7bb75945132C0c",
-};
-
-const SwapContainer = () => {
+const useSwapLogic = (
+  tokens: string[],
+  tokenAddressMapping: TokenAddressMapping
+) => {
   const { isConnected, address, handleConnect } = useWallet();
   const [payToken, setPayToken] = useState(tokens[0]);
   const [receiveToken, setReceiveToken] = useState(tokens[1]);
@@ -54,7 +47,7 @@ const SwapContainer = () => {
         setReceiveTokenBalance(receiveTokenBalance);
       }
     })();
-  }, [isConnected, payToken, receiveToken, address]);
+  }, [isConnected, payToken, receiveToken, address, tokenAddressMapping]);
 
   useEffect(() => {
     (async () => {
@@ -67,7 +60,7 @@ const SwapContainer = () => {
         setEquivalentAmount(OnePayTokenToReceiveTokenAmount);
       }
     })();
-  }, [isConnected, payToken, receiveToken]);
+  }, [isConnected, payToken, receiveToken, tokenAddressMapping]);
 
   const handleAmountChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsed = e.target.value ? parseFloat(e.target.value) : "";
@@ -182,54 +175,25 @@ const SwapContainer = () => {
     resetTransactionStates();
   };
 
-  return (
-    <div className="swap-container max-w-2xl mx-auto mt-10 p-6 bg-black rounded-xl shadow-lg">
-      <div className="tabs flex justify-between">
-        <div className="bg-gray-500 py-2 px-4 rounded-full shadow-md hover:bg-gray-700 cursor-pointer">
-          Swap
-        </div>
-      </div>
-      <SwapInput
-        label="You pay"
-        id="pay"
-        tokens={tokens.filter((token) => token !== receiveToken)}
-        selectedToken={payToken}
-        onSelectToken={setPayToken}
-        amount={payAmount}
-        tokenBalance={payTokenBalance}
-        readOnly={false}
-        handleAmountChange={handleAmountChange}
-      />
-      <SwapInput
-        label="You receive"
-        id="receive"
-        tokens={tokens.filter((token) => token !== payToken)}
-        selectedToken={receiveToken}
-        onSelectToken={setReceiveToken}
-        amount={receiveAmount}
-        tokenBalance={receiveTokenBalance}
-        readOnly={true}
-        handleAmountChange={handleAmountChange}
-      />
-      <div className="swap-details text-sm my-4">
-        <p>
-          1 {payToken}= {equivalentAmount} {receiveToken}
-        </p>
-      </div>
-      {isConnected ? (
-        <Button label="Swap" onClick={handleSwapClick} />
-      ) : (
-        <Button label="Connect Wallet" onClick={handleConnect} />
-      )}
-      {isModalOpen && (
-        <TransactionModal
-          approveStatus={approveStatus}
-          swapStatus={swapStatus}
-        />
-      )}
-      <ToastContainer />
-    </div>
-  );
+  return {
+    payToken,
+    receiveToken,
+    payAmount,
+    receiveAmount,
+    payTokenBalance,
+    receiveTokenBalance,
+    equivalentAmount,
+    isModalOpen,
+    approveStatus,
+    swapStatus,
+    handleAmountChange,
+    handleSwapClick,
+    setPayToken,
+    setReceiveToken,
+    setIsModalOpen,
+    setPayAmount,
+    setReceiveAmount,
+  };
 };
 
-export default SwapContainer;
+export default useSwapLogic;
