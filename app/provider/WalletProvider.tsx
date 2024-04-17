@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import { WalletContextState } from "../interfaces/defination";
 import { checkWalletConnection, connectWallet } from "../utils/connectWallet";
 
-// Create the context with a default value
 const WalletContext = createContext<WalletContextState>({
   isConnected: false,
   address: "",
