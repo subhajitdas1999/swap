@@ -1,5 +1,8 @@
 import { ethers } from "ethers";
-import { ConnectionErrorCode, ConnectWalletResponse } from "../defination";
+import {
+  ConnectionErrorCode,
+  ConnectWalletResponse,
+} from "../interfaces/defination";
 
 const SEPOLIA_NETWORK_ID = 11155111;
 export const connectWallet = async (): Promise<ConnectWalletResponse> => {

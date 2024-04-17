@@ -1,4 +1,4 @@
-import { TokenSelectorProps } from "../defination";
+import { TokenSelectorProps } from "../interfaces/defination";
 
 const TokenSelector: React.FC<TokenSelectorProps> = ({
   options,

@@ -1,4 +1,4 @@
-import { SwapInputProps } from "../defination";
+import { SwapInputProps } from "../interfaces/defination";
 import TokenSelector from "./TokenSelector";
 
 const SwapInput: React.FC<SwapInputProps> = ({

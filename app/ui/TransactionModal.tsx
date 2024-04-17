@@ -1,5 +1,5 @@
 import React from "react";
-import { TransactionModalProps } from "../defination";
+import { TransactionModalProps } from "../interfaces/defination";
 
 const TransactionModal: React.FC<TransactionModalProps> = ({
   approveStatus,

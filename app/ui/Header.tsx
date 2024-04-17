@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import { useWallet } from "../WalletContext";
+import { useWallet } from "../provider/WalletProvider";
 
 const truncateAddress = (fullAddress: string) => {
   return `${fullAddress.slice(0, 5)}...${fullAddress.slice(-4)}`;

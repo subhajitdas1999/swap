@@ -1,4 +1,4 @@
-import { ButtonProps } from "../defination";
+import { ButtonProps } from "../interfaces/defination";
 
 const Button: React.FC<ButtonProps> = ({ label, onClick }) => {
   return (
