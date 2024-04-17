@@ -6,9 +6,9 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { WalletContextState } from "./defination";
-import { checkWalletConnection, connectWallet } from "./utils/connectWallet";
 import { toast } from "react-toastify";
+import { WalletContextState } from "../interfaces/defination";
+import { checkWalletConnection, connectWallet } from "../utils/connectWallet";
 
 // Create the context with a default value
 const WalletContext = createContext<WalletContextState>({
@@ -22,14 +22,13 @@ interface WalletProviderProps {
   children: ReactNode;
 }
 
-// Provide the context to the component subtree
 export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [address, setAddress] = useState<string>("");
 
   useEffect(() => {
     const initializeConnection = async () => {
-      const currentAddress = await checkWalletConnection(); // Function that checks connection without popup
+      const currentAddress = await checkWalletConnection();
       if (currentAddress) {
         setIsConnected(true);
         setAddress(currentAddress);
@@ -72,5 +71,4 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   );
 };
 
-// Hook to use the wallet context
 export const useWallet = (): WalletContextState => useContext(WalletContext);
